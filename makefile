@@ -24,19 +24,18 @@ build: iso
 clean:
 	rm -rf *.o *.iso $(OUTPUT_FOLDER)/kernel
 
-
-
 kernel:
-	@$(ASM) $(AFLAGS) $(SOURCE_FOLDER)/kernel-entrypoint.s -o $(OUTPUT_FOLDER)/kernel-entrypoint.o
+	@$(ASM) $(AFLAGS) src/kernel-entrypoint.s -o bin/kernel-entrypoint.o
 # TODO: Compile C file with CFLAGS
-	@$(LIN) $(LFLAGS) bin/*.o -o $(OUTPUT_FOLDER)/kernel
+	@$(CC) $(CFLAGS) src/gdt.c -o bin/gdt.o
+	@$(LIN) $(LFLAGS) bin/*.o -o bin/kernel
 	@echo Linking object files and generate elf32...
 	@rm -f *.o
 
 iso: kernel
-	@mkdir -p $(OUTPUT_FOLDER)/iso/boot/grub
-	@cp $(OUTPUT_FOLDER)/kernel     $(OUTPUT_FOLDER)/iso/boot/
-	@cp other/grub1                 $(OUTPUT_FOLDER)/iso/boot/grub/
-	@cp $(SOURCE_FOLDER)/menu.lst   $(OUTPUT_FOLDER)/iso/boot/grub/
+	@mkdir -p bin/iso/boot/grub
+	@cp bin/kernel     bin/iso/boot/
+	@cp other/grub1                 bin/iso/boot/grub/
+	@cp src/menu.lst   bin/iso/boot/grub/
 # TODO: Create ISO image
-	@rm -r $(OUTPUT_FOLDER)/iso/
+	@rm -r bin/iso/

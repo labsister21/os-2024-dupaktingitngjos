@@ -27,15 +27,23 @@ extern struct GDTR _gdt_gdtr;
  */
 struct SegmentDescriptor {
     // First 32-bit
-    uint16_t segment_low;
-    uint16_t base_low;
+    uint16_t segment_low;               // Segments Limit 15:00
+    uint16_t base_low;                  // Base Address 15:00
 
     // Next 16-bit (Bit 32 to 47)
-    uint8_t base_mid;
-    uint8_t type_bit   : 4;
-    uint8_t non_system : 1;
-    // TODO : Continue SegmentDescriptor definition
+    uint8_t base_mid;                                           // Base 23:16
+    uint8_t type_bit   : 4;                                     // Type
+    uint8_t non_system : 1;                                     // S
+    uint8_t dpl        : 2; // Descriptor Privilege Level       // DPL
+    uint8_t present    : 1;                                     // P
 
+    // Next 32-bit
+    uint8_t limit_high : 4;                                                     // Seg. Limit 19:16
+    uint8_t avl        : 1; // Available for system software use                // AVL
+    uint8_t reserved   : 1;                                                     // L
+    uint8_t operation  : 1; // 0 for data segment, 1 for code segment           // D/B
+    uint8_t granularity: 1; // 0 for byte granulariy, 1 for 4KB granulariy      // G
+    uint8_t base_high;                                                          // Base 31:24
 } __attribute__((packed));
 
 /**
