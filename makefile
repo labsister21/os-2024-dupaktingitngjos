@@ -22,18 +22,27 @@ run: all
 all: build
 build: iso
 clean:
-	rm -rf *.o *.iso $(OUTPUT_FOLDER)/kernel
+	@# modified from template
+	rm -rf $(OUTPUT_FOLDER)/*.o $(OUTPUT_FOLDER)/*.iso $(OUTPUT_FOLDER)/kernel
 
 
 
 kernel:
 	@$(ASM) $(AFLAGS) $(SOURCE_FOLDER)/kernel-entrypoint.s -o $(OUTPUT_FOLDER)/kernel-entrypoint.o
 
-	@# TODO: Compile C file with CFLAGS
+	@# chapter 0
 	@$(CC) $(CFLAGS) $(SOURCE_FOLDER)/kernel.c -o $(OUTPUT_FOLDER)/kernel.o
+	@$(CC) $(CFLAGS) $(SOURCE_FOLDER)/gdt.c -o $(OUTPUT_FOLDER)/gdt.o
 
-	@$(LIN) $(LFLAGS) bin/*.o -o $(OUTPUT_FOLDER)/kernel
+	@# chapter 1
+	@#$(CC) $(CFLAGS) $(SOURCE_FOLDER)/framebuffer.c -o $(OUTPUT_FOLDER)/framebuffer.o
+
+	@# modified from template
+	@$(LIN) $(LFLAGS) $(OUTPUT_FOLDER)/*.o -o $(OUTPUT_FOLDER)/kernel
+
 	@echo Linking object files and generate elf32...
+	
+	@# modified from template
 	@rm -f $(OUTPUT_FOLDER)/*.o
 
 iso: kernel
@@ -42,9 +51,9 @@ iso: kernel
 	@cp other/grub1                 $(OUTPUT_FOLDER)/iso/boot/grub/
 	@cp $(SOURCE_FOLDER)/menu.lst   $(OUTPUT_FOLDER)/iso/boot/grub/
 
-	@# TODO: Create ISO image
+	@# chapter 0
 	@genisoimage -R                         \
-	    -b boot/grub/grub1 \
+	    -b boot/grub/grub1                  \
 	    -no-emul-boot                       \
 	    -boot-load-size 4                   \
 	    -A os                               \
