@@ -4,6 +4,8 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <stddef.h>
+#include "idt.h"
+#include "portio.h"
 
 /* -- PIC constants -- */
 

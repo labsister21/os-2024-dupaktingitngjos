@@ -75,7 +75,7 @@ struct IDT {
 // ...
 struct IDTR {
     uint16_t size;
-    struct InterruptDescriptorTable *address;
+    struct IDT *address;
 } __attribute__((packed));
 
 
