@@ -71,10 +71,10 @@
  * @param segment CPU extra segment register (gs, fs, es, ds)
  */
 struct CPURegister {
-    struct {
-        uint32_t edi;
-        uint32_t esi;
-    } __attribute__((packed)) index;
+    // struct {
+    //     uint32_t edi;
+    //     uint32_t esi;
+    // } __attribute__((packed)) index;
     struct {
         uint32_t esp;
         uint32_t ebp;
@@ -85,12 +85,12 @@ struct CPURegister {
         uint32_t ecx;
         uint32_t eax;
     } __attribute__((packed)) general;
-    struct {
-        uint32_t gs;
-        uint32_t fs;
-        uint32_t es;
-        uint32_t ds;
-    } __attribute__((packed)) segment;
+    // struct {
+    //     uint32_t gs;
+    //     uint32_t fs;
+    //     uint32_t es;
+    //     uint32_t ds;
+    // } __attribute__((packed)) segment;
 } __attribute__((packed));
 
 /**

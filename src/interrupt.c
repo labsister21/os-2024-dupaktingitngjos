@@ -1,4 +1,5 @@
 #include "header/cpu/interrupt.h"
+#include "header/driver/keyboard.h"
 
 // Activate PIC mask for keyboard only
 void activate_keyboard_interrupt(void){
@@ -55,9 +56,11 @@ void pic_remap(void){
  * Again, this function is not for normal function call, all parameter will be automatically set when interrupt is called.
  * @param frame Information about CPU during interrupt is raised
  */
+
 void main_interrupt_handler(struct InterruptFrame frame){
     switch (frame.int_number) {
-        // ...
+        case (IRQ_KEYBOARD + PIC1_OFFSET):
+            keyboard_isr();
+            break;       
     }
-
 }
