@@ -67,7 +67,11 @@ void kernel_setup(void) {
          {
             if (c == '\n')
             {
-                if (row != FRAMEBUFFER_HEIGHT - 1) row++; /* masi aneh */
+                if (row != FRAMEBUFFER_HEIGHT - 1)
+                {
+                    row++; 
+                    col = 0;
+                }
             }
             else if (c == '\b')
             {
