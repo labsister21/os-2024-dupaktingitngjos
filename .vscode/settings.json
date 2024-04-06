@@ -1,9 +1,23 @@
 {
     "debug.onTaskErrors": "debugAnyway",
     "files.associations": {
+        "*.css": "css",
+        "*.py": "python",
         "gdt.h": "c",
         "kernel-entrypoint.h": "c",
         "stdbool.h": "c",
-        "stdint.h": "c"
+        "stdint.h": "c",
+        "stddef.h": "c",
+        "disk.h": "c",
+        "cmath": "c",
+        "compare": "c",
+        "concepts": "c",
+        "type_traits": "c",
+        "limits": "c",
+        "*.tcc": "c",
+        "typeinfo": "c",
+        "string.h": "c"
     },
+    "editor.formatOnSave": false,
+    "editor.fontSize": 16,
 }
