@@ -7,6 +7,8 @@
 #include "header/cpu/idt.h"
 #include "header/cpu/interrupt.h"
 #include "header/driver/keyboard.h"
+#include "header/driver/disk.h"
+#include "header/filesystem/fat32.h"
 
 // void kernel_setup(void) {
 //     uint32_t a;
@@ -14,7 +16,7 @@
 //     __asm__("mov $0xCAFE0000, %0" : "=r"(a));
 //     while (true) b += 1;
 // }
-//
+
 // void kernel_setup(void) {
 //     load_gdt(&_gdt_gdtr);
 //     while (true);
@@ -45,9 +47,20 @@
 //         ;
 // }
 
+// void kernel_setup(void) {
+//     load_gdt(&_gdt_gdtr);
+//     pic_remap();
+//     initialize_idt();
+//     framebuffer_clear();
+//     framebuffer_set_cursor(0, 0);
+//     __asm__("int $0x4");
+//     while (true);
+// }
+
 void kernel_setup(void) {
     load_gdt(&_gdt_gdtr);
     pic_remap();
+    activate_keyboard_interrupt();
     initialize_idt();
     activate_keyboard_interrupt();
     framebuffer_clear();
@@ -103,3 +116,17 @@ void kernel_setup(void) {
     __asm__("int $0x4");
     while (true);
 }
+
+// void kernel_setup(void) {
+//     load_gdt(&_gdt_gdtr);
+//     pic_remap();
+//     activate_keyboard_interrupt();
+//     initialize_idt();
+//     framebuffer_clear();
+//     framebuffer_set_cursor(0, 0);
+
+//     struct BlockBuffer b;
+//     for (int i = 0; i < 512; i++) b.buf[i] = i % 16;
+//     write_blocks(&b, 17, 1);
+//     while (true);
+// }
