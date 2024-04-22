@@ -59,12 +59,16 @@ struct PageDirectoryEntryFlag {
  * - "Bits 31:22 of address" is called lower_address in kit
  */
 struct PageDirectoryEntry {
-    struct PageDirectoryEntryFlag flag;
-    uint16_t global_page    : 1;
-    uint16_t reserved_2     : 1;  // Reserved bit (1-bit)
-    uint16_t higher_address : 8;  // Bits 39:32 of address (higher_address)
-    uint16_t lower_address  : 10; // Bits 31:22 of address (lower_address)
     // TODO : Continue, Use uint16_t + bitfield here, Do not use uint8_t
+    // gak tau benar/tidak
+    struct PageDirectoryEntryFlag flag;
+    uint16_t global_page    : 1; // G
+    uint16_t ignored        : 3; // Ignored bits (3-bit)
+    uint16_t page_size      : 1; // PAT (1-bit)
+    uint16_t higher_address : 4; // Bits 39:32 of address
+    uint16_t reserved_1     : 4; // Reserved bits (3-bit)
+    uint16_t reserved_2     : 1; // Reserved bit (1-bit)
+    uint16_t lower_address  : 10; // Lower 10 bits of page frame address (10-bit)
 } __attribute__((packed));
 
 /**
@@ -79,6 +83,7 @@ struct PageDirectoryEntry {
  */
 struct PageDirectory {
     // TODO : Implement
+    struct PageDirectoryEntry table[PAGE_ENTRY_COUNT] __attribute__((aligned(0x1000)));
 } __attribute__((packed));
 
 /**
