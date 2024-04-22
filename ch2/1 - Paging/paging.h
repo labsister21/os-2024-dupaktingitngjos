@@ -96,6 +96,7 @@ struct PageManagerState {
     bool     page_frame_map[PAGE_FRAME_MAX_COUNT];
     uint32_t free_page_frame_count;
     // TODO: Add if needed ...
+    // saat ini belum ada
 } __attribute__((packed));
 
 

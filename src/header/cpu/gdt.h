@@ -2,6 +2,7 @@
 #define _GDT_H
 
 #include <stdint.h>
+#include "interrupt.h"
 
 // Some GDT Constant
 #define GDT_MAX_ENTRY_COUNT 32
@@ -11,6 +12,10 @@
 */ 
 #define GDT_KERNEL_CODE_SEGMENT_SELECTOR 0x8
 #define GDT_KERNEL_DATA_SEGMENT_SELECTOR 0x10
+
+#define GDT_USER_CODE_SEGMENT_SELECTOR 0x18
+#define GDT_USER_DATA_SEGMENT_SELECTOR 0x20
+#define GDT_TSS_SELECTOR               0x28
 
 extern struct GDTR _gdt_gdtr;
 
@@ -34,14 +39,14 @@ struct SegmentDescriptor {
     uint8_t base_mid;                                           // Base 23:16
     uint8_t type_bit   : 4;                                     // Type
     uint8_t non_system : 1;                                     // S
-    uint8_t dpl        : 2; // Descriptor Privilege Level       // DPL
-    uint8_t present    : 1;                                     // P
+    uint8_t privilege        : 2; // Descriptor Privilege Level       // DPL
+    uint8_t valid_bit  : 1;                                     // P
 
     // Next 32-bit
-    uint8_t limit_high : 4;                                                     // Seg. Limit 19:16
+    uint8_t segment_high : 4;                                                     // Seg. Limit 19:16
     uint8_t avl        : 1; // Available for system software use                // AVL
-    uint8_t reserved   : 1;                                                     // L
-    uint8_t operation  : 1; // 0 for data segment, 1 for code segment           // D/B
+    uint8_t long_mode  : 1;                                                     // L
+    uint8_t opr_32_bit : 1; // 0 for data segment, 1 for code segment           // D/B
     uint8_t granularity: 1; // 0 for byte granulariy, 1 for 4KB granulariy      // G
     uint8_t base_high;                                                          // Base 31:24
 } __attribute__((packed));
@@ -66,5 +71,8 @@ struct GDTR {
     uint16_t                     size;
     struct GlobalDescriptorTable *address;
 } __attribute__((packed));
+
+// Set GDT_TSS_SELECTOR with proper TSS values, accessing _interrupt_tss_entry
+void gdt_install_tss(void);
 
 #endif
