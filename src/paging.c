@@ -8,11 +8,6 @@ __attribute__((aligned(0x1000))) struct PageDirectory _paging_kernel_page_direct
         [0] = {
             .flag.present_bit       = 1,
             .flag.read_write        = 1,
-            .flag.user_supervisor   = 1,
-            .flag.write_through     = 1,
-            .flag.cache_disabled    = 1,
-            .flag.accessed          = 1,
-            .flag.dirty             = 1,
             .flag.page_size         = 1,
 
             .lower_address          = 0,
@@ -20,11 +15,6 @@ __attribute__((aligned(0x1000))) struct PageDirectory _paging_kernel_page_direct
         [0x300] = {
             .flag.present_bit       = 1,
             .flag.read_write        = 1,
-            .flag.user_supervisor   = 1,
-            .flag.write_through     = 1,
-            .flag.cache_disabled    = 1,
-            .flag.accessed          = 1,
-            .flag.dirty             = 1,
             .flag.page_size         = 1,
             
             .lower_address          = 0,
