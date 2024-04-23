@@ -30,19 +30,20 @@ extern struct PageDirectory _paging_kernel_page_directory;
  * @param cache_disabled    Indicates whether caching is disabled for the page
  * @param accessed          Indicates whether the page has been accessed
  * @param dirty             Indicates whether the page has been written to
- * @param global            Indicates whether the page is global
+ * @param page_size 
  *
  */
 struct PageDirectoryEntryFlag {
 // TODO : Continue. Note: Only 8-bit flags
     uint8_t present_bit        : 1;
+
     uint8_t read_write         : 1;
     uint8_t user_supervisor    : 1;
     uint8_t write_through      : 1;
     uint8_t cache_disabled     : 1;
     uint8_t accessed           : 1;
     uint8_t dirty              : 1;
-    uint8_t global             : 1;
+    uint8_t page_size          : 1;
 } __attribute__((packed));
 
 /**
@@ -52,22 +53,20 @@ struct PageDirectoryEntryFlag {
  * @param flag            Contain 8-bit page directory entry flag
  * @param global_page     Is this page translation global & cannot be flushed?
  * ...
- * @param reserved_2      Reserved bit (1-bit)
+ * @param reserved_2      Reserved bit (1-bit) ?? naon ieu
  * @param lower_address   10-bit page frame lower address, note directly correspond with 4 MiB memory (= 0x40 0000 = 1
  * Note:
  * - "Bits 39:32 of address" (higher_address) is 8-bit
  * - "Bits 31:22 of address" is called lower_address in kit
  */
 struct PageDirectoryEntry {
-    // TODO : Continue, Use uint16_t + bitfield here, Do not use uint8_t
-    // gak tau benar/tidak
     struct PageDirectoryEntryFlag flag;
-    uint16_t global_page    : 1; // G
+    uint16_t global_page    : 1;
+    
     uint16_t ignored        : 3; // Ignored bits (3-bit)
     uint16_t page_size      : 1; // PAT (1-bit)
-    uint16_t higher_address : 4; // Bits 39:32 of address
-    uint16_t reserved_1     : 4; // Reserved bits (3-bit)
-    uint16_t reserved_2     : 1; // Reserved bit (1-bit)
+    uint16_t higher_address : 8; // Bits 39:32 of address
+    uint16_t reserved       : 3; // Reserved bits (3-bit)
     uint16_t lower_address  : 10; // Lower 10 bits of page frame address (10-bit)
 } __attribute__((packed));
 
@@ -83,7 +82,7 @@ struct PageDirectoryEntry {
  */
 struct PageDirectory {
     // TODO : Implement
-    struct PageDirectoryEntry table[PAGE_ENTRY_COUNT] __attribute__((aligned(0x1000)));
+    struct PageDirectoryEntry table[PAGE_ENTRY_COUNT] __attribute__((aligned(0x1000)))
 } __attribute__((packed));
 
 /**
@@ -96,7 +95,6 @@ struct PageManagerState {
     bool     page_frame_map[PAGE_FRAME_MAX_COUNT];
     uint32_t free_page_frame_count;
     // TODO: Add if needed ...
-    // saat ini belum ada
 } __attribute__((packed));
 
 
