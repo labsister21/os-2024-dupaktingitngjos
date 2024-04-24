@@ -29,7 +29,7 @@ static struct PageManagerState page_manager_state = {
     },
 
     // TODO: Initialize page manager state properly
-    .free_page_frame_count = PAGE_FRAME_MAX_COUNT,
+    .free_page_frame_count = PAGE_FRAME_MAX_COUNT - 1,
 };
 
 void update_page_directory_entry(
@@ -70,10 +70,12 @@ bool paging_allocate_user_page_frame(struct PageDirectory *page_dir, void *virtu
      *     > pagesize 4 mb  true
      */ 
 
+    // Cari free physical frame
     uint32_t physical_idx;
     for (physical_idx = 0; physical_idx < PAGE_FRAME_MAX_COUNT; ++physical_idx)
         if (!page_manager_state.page_frame_map[physical_idx]) 
         {
+            // Mark
             page_manager_state.page_frame_map[physical_idx] = true;
             --page_manager_state.free_page_frame_count;
             break;
@@ -82,12 +84,16 @@ bool paging_allocate_user_page_frame(struct PageDirectory *page_dir, void *virtu
     //  Ga ketemu frame yang free
     if (physical_idx >= PAGE_FRAME_MAX_COUNT) 
         return false;
+    
+    // Update page directory
+    struct PageDirectoryEntryFlag flag;
+    flag.present_bit     = true;
+    flag.read_write      = true;
+    flag.user_supervisor = true;
+    flag.page_size       = true;
 
-    uint32_t page_idx = ((uint32_t) virtual_addr >> 22) & 0x3FF;
-    page_dir->table[page_idx].flag.present_bit     = false;
-    page_dir->table[page_idx].flag.read_write      = false;
-    page_dir->table[page_idx].flag.user_supervisor = false;
-    page_dir->table[page_idx].flag.page_size       = false;
+    // (void*) (physical_idx * PAGE_FRAME_SIZE) mungkin salah
+    update_page_directory_entry(page_dir, (void*) (physical_idx * PAGE_FRAME_SIZE), virtual_addr, flag);
 
     return true;
 }
@@ -106,13 +112,8 @@ bool paging_free_user_page_frame(struct PageDirectory *page_dir, void *virtual_a
         return false;
 
     uint32_t physical_idx = page_dir->table[page_idx].lower_address;
-    page_manager_state.page_frame_map[physical_idx] = false;
+    page_manager_state.page_frame_map[physical_idx] = 0;
     ++page_manager_state.free_page_frame_count;
-
-    page_dir->table[page_idx].flag.present_bit     = 0;
-    page_dir->table[page_idx].flag.read_write      = 0;
-    page_dir->table[page_idx].flag.user_supervisor = 0;
-    page_dir->table[page_idx].flag.page_size       = 0;
 
     return true;
 }
