@@ -16,7 +16,10 @@
         "limits": "c",
         "*.tcc": "c",
         "typeinfo": "c",
-        "string.h": "c"
+        "string.h": "c",
+        "paging.h": "c",
+        "fat32.h": "c",
+        "portio.h": "c"
     },
     "editor.formatOnSave": false,
     "editor.fontSize": 16,
