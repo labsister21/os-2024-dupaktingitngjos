@@ -1,15 +1,15 @@
 #include <stdint.h>
 #include <stdbool.h>
-#include "header/cpu/gdt.h"
-#include "header/kernel-entrypoint.h"
-#include "header/text/framebuffer.h"
-#include "header/cpu/portio.h"
-#include "header/cpu/idt.h"
-#include "header/cpu/interrupt.h"
-#include "header/driver/keyboard.h"
-#include "header/driver/disk.h"
-#include "header/filesystem/fat32.h"
-#include "header/memory/paging.h"
+#include "ch0/gdt/gdt.h"
+#include "ch0/kernel-entrypoint/kernel-entrypoint.h"
+#include "ch1/framebuffer/framebuffer.h"
+#include "ch1/portio/portio.h"
+#include "ch1/idt/idt.h"
+#include "ch1/interrupt/interrupt.h"
+#include "ch1/keyboard/keyboard.h"
+#include "ch1/disk/disk.h"
+#include "ch1/fat32/fat32.h"
+#include "ch2/paging/paging.h"
 
 // void kernel_setup(void) {
 //     uint32_t a;

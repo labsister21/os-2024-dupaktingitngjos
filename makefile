@@ -7,6 +7,10 @@ CC            = gcc
 SOURCE_FOLDER = src
 OUTPUT_FOLDER = bin
 ISO_NAME      = OS2024
+CHAPTER_0     = ch0
+CHAPTER_1     = ch1
+CHAPTER_2     = ch2
+CHAPTER_3     = ch3
 
 # Flags
 WARNING_CFLAG = -Wall -Wextra -Werror
@@ -26,39 +30,6 @@ run: all
 all: build
 
 build: iso
-
-clean:
-	@# modified from template
-	rm -rf $(OUTPUT_FOLDER)/*.o $(OUTPUT_FOLDER)/*.iso $(OUTPUT_FOLDER)/kernel
-
-kernel:
-	@$(ASM) $(AFLAGS) $(SOURCE_FOLDER)/kernel-entrypoint.s -o $(OUTPUT_FOLDER)/kernel-entrypoint.o
-
-	@# chapter 0
-	@$(CC) $(CFLAGS) $(SOURCE_FOLDER)/kernel.c -o $(OUTPUT_FOLDER)/kernel.o
-	@$(CC) $(CFLAGS) $(SOURCE_FOLDER)/gdt.c -o $(OUTPUT_FOLDER)/gdt.o
-
-	@# chapter 1
-	@$(CC) $(CFLAGS) $(SOURCE_FOLDER)/framebuffer.c -o $(OUTPUT_FOLDER)/framebuffer.o
-	@$(CC) $(CFLAGS) $(SOURCE_FOLDER)/portio.c -o $(OUTPUT_FOLDER)/portio.o
-	@$(CC) $(CFLAGS) $(SOURCE_FOLDER)/idt.c -o $(OUTPUT_FOLDER)/idt.o
-	@$(CC) $(CFLAGS) $(SOURCE_FOLDER)/interrupt.c -o $(OUTPUT_FOLDER)/interrupt.o
-	@$(ASM) $(AFLAGS) $(SOURCE_FOLDER)/intsetup.s -o $(OUTPUT_FOLDER)/intsetup.o
-	@$(CC) $(CFLAGS) $(SOURCE_FOLDER)/keyboard.c -o $(OUTPUT_FOLDER)/keyboard.o
-	@$(CC) $(CFLAGS) $(SOURCE_FOLDER)/stdlib/string.c -o $(OUTPUT_FOLDER)/string.o
-	@$(CC) $(CFLAGS) $(SOURCE_FOLDER)/disk.c -o $(OUTPUT_FOLDER)/disk.o
-	@$(CC) $(CFLAGS) $(SOURCE_FOLDER)/fat32.c -o $(OUTPUT_FOLDER)/fat32.o
-
-	@# chapter 2
-	@$(CC) $(CFLAGS) $(SOURCE_FOLDER)/paging.c -o $(OUTPUT_FOLDER)/paging.o
-
-	@# modified from template
-	@$(LIN) $(LFLAGS) $(OUTPUT_FOLDER)/*.o -o $(OUTPUT_FOLDER)/kernel
-
-	@echo Linking object files and generate elf32...
-	
-	@# modified from template
-	@rm -f $(OUTPUT_FOLDER)/*.o
 
 iso: kernel
 	@mkdir -p $(OUTPUT_FOLDER)/iso/boot/grub
@@ -80,25 +51,57 @@ iso: kernel
 
 	@rm -r $(OUTPUT_FOLDER)/iso/
 
+kernel:
+	@# chapter 0
+	@$(CC) $(CFLAGS) $(SOURCE_FOLDER)/$(CHAPTER_0)/gdt/gdt.c -o $(OUTPUT_FOLDER)/gdt.o
+	@$(ASM) $(AFLAGS) $(SOURCE_FOLDER)/$(CHAPTER_0)/kernel-entrypoint/kernel-entrypoint.s -o $(OUTPUT_FOLDER)/kernel-entrypoint.o
+	@$(CC) $(CFLAGS) $(SOURCE_FOLDER)/$(CHAPTER_0)/stdlib/string.c -o $(OUTPUT_FOLDER)/string.o
+	@$(CC) $(CFLAGS) $(SOURCE_FOLDER)/kernel.c -o $(OUTPUT_FOLDER)/kernel.o
+
+	@# chapter 1
+	@$(CC) $(CFLAGS) $(SOURCE_FOLDER)/$(CHAPTER_1)/disk/disk.c -o $(OUTPUT_FOLDER)/disk.o
+	@$(CC) $(CFLAGS) $(SOURCE_FOLDER)/$(CHAPTER_1)/fat32/fat32.c -o $(OUTPUT_FOLDER)/fat32.o
+	@$(CC) $(CFLAGS) $(SOURCE_FOLDER)/$(CHAPTER_1)/framebuffer/framebuffer.c -o $(OUTPUT_FOLDER)/framebuffer.o
+	@$(CC) $(CFLAGS) $(SOURCE_FOLDER)/$(CHAPTER_1)/idt/idt.c -o $(OUTPUT_FOLDER)/idt.o
+	@$(CC) $(CFLAGS) $(SOURCE_FOLDER)/$(CHAPTER_1)/interrupt/interrupt.c -o $(OUTPUT_FOLDER)/interrupt.o
+	@$(ASM) $(AFLAGS) $(SOURCE_FOLDER)/$(CHAPTER_1)/intsetup/intsetup.s -o $(OUTPUT_FOLDER)/intsetup.o
+	@$(CC) $(CFLAGS) $(SOURCE_FOLDER)/$(CHAPTER_1)/keyboard/keyboard.c -o $(OUTPUT_FOLDER)/keyboard.o
+	@$(CC) $(CFLAGS) $(SOURCE_FOLDER)/$(CHAPTER_1)/portio/portio.c -o $(OUTPUT_FOLDER)/portio.o
+
+	@# chapter 2
+	@$(CC) $(CFLAGS) $(SOURCE_FOLDER)/$(CHAPTER_2)/paging/paging.c -o $(OUTPUT_FOLDER)/paging.o
+
+	@$(LIN) $(LFLAGS) $(OUTPUT_FOLDER)/*.o -o $(OUTPUT_FOLDER)/kernel
+	@echo Linking object files and generate elf32...
+	@rm -f $(OUTPUT_FOLDER)/*.o
+
+clean:
+	@rm -f \
+		$(OUTPUT_FOLDER)/*.o \
+		$(OUTPUT_FOLDER)/*.iso \
+		$(OUTPUT_FOLDER)/kernel \
+		$(OUTPUT_FOLDER)/inserter \
+		$(OUTPUT_FOLDER)/shell
+
 disk:
 	@qemu-img create -f raw $(OUTPUT_FOLDER)/$(DISK_NAME).bin 4M
 
+insert-shell: inserter user-shell
+	@echo Inserting shell into root directory...
+	@cd $(OUTPUT_FOLDER); ./inserter shell 2 $(DISK_NAME).bin
+
 inserter:
 	@$(CC) -Wno-builtin-declaration-mismatch -g -I$(SOURCE_FOLDER) \
-		$(SOURCE_FOLDER)/stdlib/string.c \
-		$(SOURCE_FOLDER)/filesystem/fat32.c \
-		$(SOURCE_FOLDER)/external/external-inserter.c \
+		$(SOURCE_FOLDER)/$(CHAPTER_0)/stdlib/string.c \
+		$(SOURCE_FOLDER)/$(CHAPTER_1)/fat32/fat32.c \
+		$(SOURCE_FOLDER)/$(CHAPTER_2)/external-inserter/external-inserter.c \
 		-o $(OUTPUT_FOLDER)/inserter
 
 user-shell:
-	@$(ASM) $(AFLAGS) $(SOURCE_FOLDER)/crt0.s -o crt0.o
-	@$(CC)  $(CFLAGS) -fno-pie $(SOURCE_FOLDER)/user-shell.c -o user-shell.o
+	@$(ASM) $(AFLAGS) $(SOURCE_FOLDER)/$(CHAPTER_2)/crt0/crt0.s -o crt0.o
+	@$(CC)  $(CFLAGS) -fno-pie $(SOURCE_FOLDER)/$(CHAPTER_2)/user-shell/user-shell.c -o user-shell.o
 	@$(LIN) -T $(SOURCE_FOLDER)/user-linker.ld -melf_i386 --oformat=binary \
 		crt0.o user-shell.o -o $(OUTPUT_FOLDER)/shell
 	@echo Linking object shell object files and generate flat binary...
 	@size --target=binary $(OUTPUT_FOLDER)/shell
 	@rm -f *.o
-
-# insert-shell: inserter user-shell
-# 	@echo Inserting shell into root directory...
-#        @cd $(OUTPUT_FOLDER); ./inserter shell 2 $(DISK_NAME).bin
