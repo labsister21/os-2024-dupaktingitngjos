@@ -49,6 +49,9 @@ kernel:
 	@$(CC) $(CFLAGS) $(SOURCE_FOLDER)/disk.c -o $(OUTPUT_FOLDER)/disk.o
 	@$(CC) $(CFLAGS) $(SOURCE_FOLDER)/fat32.c -o $(OUTPUT_FOLDER)/fat32.o
 
+	@# chapter 2
+	@$(CC) $(CFLAGS) $(SOURCE_FOLDER)/paging.c -o $(OUTPUT_FOLDER)/paging.o
+
 	@# modified from template
 	@$(LIN) $(LFLAGS) $(OUTPUT_FOLDER)/*.o -o $(OUTPUT_FOLDER)/kernel
 
@@ -96,6 +99,6 @@ user-shell:
 	@size --target=binary $(OUTPUT_FOLDER)/shell
 	@rm -f *.o
 
-insert-shell: inserter user-shell
-	@echo Inserting shell into root directory...
-       @cd $(OUTPUT_FOLDER); ./inserter shell 2 $(DISK_NAME).bin
+# insert-shell: inserter user-shell
+# 	@echo Inserting shell into root directory...
+#        @cd $(OUTPUT_FOLDER); ./inserter shell 2 $(DISK_NAME).bin
