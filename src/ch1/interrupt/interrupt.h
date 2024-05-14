@@ -172,4 +172,11 @@ struct TSSEntry {
 // Set kernel stack in TSS
 void set_tss_kernel_current_stack(void);
 
+void putc(char c, uint32_t color);
+
+void puts(char *str, uint32_t len, uint32_t color);
+
+// System call handler
+void syscall(struct InterruptFrame frame);
+
 #endif
