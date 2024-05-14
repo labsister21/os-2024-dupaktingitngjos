@@ -1,5 +1,7 @@
 #include "interrupt.h"
 #include "../keyboard/keyboard.h"
+#include "../idt/idt.h"
+#include "../fat32/fat32.h"
 
 // Activate PIC mask for keyboard only
 void activate_keyboard_interrupt(void){
@@ -75,4 +77,82 @@ void set_tss_kernel_current_stack(void) {
     __asm__ volatile ("mov %%ebp, %0": "=r"(stack_ptr) : /* <Empty> */);
     // Add 8 because 4 for ret address and other 4 is for stack_ptr variable
     _interrupt_tss_entry.esp0 = stack_ptr + 8; 
+}
+
+void putc(char c, uint32_t color) {
+    uint16_t *buffer = (uint16_t *) 0xB8000;
+    static uint32_t x = 0, y = 0;
+
+    if (c == '\n') {
+        x = 0;
+        y++;
+    } else {
+        buffer[y * 80 + x] = (color << 8) | c;
+        x++;
+    }
+
+    if (x >= 80) {
+        x = 0;
+        y++;
+    }
+
+    if (y >= 25) {
+        for (uint32_t y = 0; y < 25; y++) {
+            for (uint32_t x = 0; x < 80; x++) {
+                buffer[y * 80 + x] = (color << 8) | ' ';
+            }
+        }
+        x = 0;
+        y = 0;
+    }
+}
+
+void puts(char *str, uint32_t len, uint32_t color) {
+    for (uint32_t i = 0; i < len; i++) {
+        putc(str[i], color);
+    }
+}
+
+void syscall(struct InterruptFrame frame) {
+    switch (frame.cpu.general.eax) {
+        case 0: // Read
+            *((int8_t*) frame.cpu.general.ecx) = read(
+                *(struct FAT32DriverRequest*) frame.cpu.general.ebx
+            );
+            break;
+        case 1 : // Read Directory
+            *((int8_t*) frame.cpu.general.ecx) = read_directory(
+                *(struct FAT32DriverRequest*) frame.cpu.general.ebx
+            );
+            break;
+        case 2 : // Write
+            *((int8_t*) frame.cpu.general.ecx) = write(
+                *(struct FAT32DriverRequest*) frame.cpu.general.ebx
+            );
+            break;
+        case 3 : // Delete
+            *((int8_t*) frame.cpu.general.ecx) = delete(
+                *(struct FAT32DriverRequest*) frame.cpu.general.ebx
+            );
+            break;
+        case 4: // Get Keyboard Buffer
+            get_keyboard_buffer((char*) frame.cpu.general.ebx);
+            break;
+        case 5: // Putchar
+            putc(
+                (char) frame.cpu.general.ebx, 
+                frame.cpu.general.ecx
+            );
+            break;
+        case 6: // Puts
+            puts(
+                (char*) frame.cpu.general.ebx, 
+                frame.cpu.general.ecx, 
+                frame.cpu.general.edx
+            ); // Assuming puts() exist in kernel
+            break;
+        case 7: // Activate Keyboard
+            keyboard_state_activate();
+            break;
+    }
 }

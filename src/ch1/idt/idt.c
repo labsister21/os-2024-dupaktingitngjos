@@ -25,8 +25,8 @@ void initialize_idt(void) {
         }
     }
 
-    __asm__ volatile("lidt %0" : : "m"(_idt_idtr));
-    __asm__ volatile("sti");
+    __asm__ volatile("lidt %0" : : "m"(_idt_idtr)); // Load IDT
+    __asm__ volatile("sti");                        // Enable Interrupt
 }
 
 void set_interrupt_gate(
