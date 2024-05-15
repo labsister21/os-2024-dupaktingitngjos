@@ -11,63 +11,63 @@ struct GlobalDescriptorTable global_descriptor_table = {
             0
         },
         { /* TODO: Kernel Code Descriptor */
-            .segment_low = 0,
+            .segment_low = 0xFFFF,
             .base_low = 0,
             .base_mid = 0,
-            .type_bit = 0b1010, // Code Segment, Readable, Accessed
+            .type_bit = 0b1010,
             .non_system = 1,
-            .privilege = 0b00, // Kernel Privilege Level
+            .privilege = 0, // Privilege Level
             .valid_bit = 1,
             .segment_high = 0xF,
             .avl = 0,
             .long_mode = 0,
-            .opr_32_bit = 1, // Code Segment
-            .granularity = 1, // 4KB granularity
+            .opr_32_bit = 1,
+            .granularity = 1,
             .base_high = 0
         },
         { /* TODO: Kernel Data Descriptor */
-            .segment_low = 0,
+            .segment_low = 0xFFFF,
             .base_low = 0,
             .base_mid = 0,
-            .type_bit = 0b0010, // Data Segment, Writable, Accessed
+            .type_bit = 0b0010,
             .non_system = 1,
-            .privilege = 0b00, // Kernel Privilege Level
+            .privilege = 0, // Privilege Level
             .valid_bit = 1,
             .segment_high = 0xF,
             .avl = 0,
             .long_mode = 0,
-            .opr_32_bit = 1, // Data Segment
-            .granularity = 1, // 4KB granularity
+            .opr_32_bit = 1,
+            .granularity = 1,
             .base_high = 0
         },
-        {/* TODO: User   Code Descriptor */
-            .segment_low = 0,
+        {/* TODO: User Code Descriptor */
+            .segment_low = 0xFFFF,
             .base_low = 0,
             .base_mid = 0,
-            .type_bit = 0b1010, // Code Segment, Readable, Accessed
+            .type_bit = 0b1010,
             .non_system = 1,
-            .privilege = 0x3, // Kernel Privilege Level
+            .privilege = 0x3, // Privilege Level
             .valid_bit = 1,
             .segment_high = 0xF,
             .avl = 0,
             .long_mode = 0,
-            .opr_32_bit = 1, // Code Segment
-            .granularity = 1, // 4KB granularity
+            .opr_32_bit = 1,
+            .granularity = 1,
             .base_high = 0
         },
-        {/* TODO: User   Data Descriptor */
-            .segment_low = 0,
+        {/* TODO: User Data Descriptor */
+            .segment_low = 0xFFFF,
             .base_low = 0,
             .base_mid = 0,
-            .type_bit = 0b0010, // Data Segment, Writable, Accessed
+            .type_bit = 0b0010,
             .non_system = 1,
-            .privilege = 0x3, // Kernel Privilege Level
+            .privilege = 0x3, // Privilege Level
             .valid_bit = 1,
             .segment_high = 0xF,
             .avl = 0,
             .long_mode = 0,
-            .opr_32_bit = 1, // Data Segment
-            .granularity = 1, // 4KB granularity
+            .opr_32_bit = 1,
+            .granularity = 1,
             .base_high = 0
         },
         {
