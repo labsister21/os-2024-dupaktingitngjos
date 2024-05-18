@@ -111,9 +111,13 @@ bool paging_free_user_page_frame(struct PageDirectory *page_dir, void *virtual_a
     if (!page_dir->table[page_idx].flag.present_bit)
         return false;
 
+    // Free physical frame
     uint32_t physical_idx = page_dir->table[page_idx].lower_address;
     page_manager_state.page_frame_map[physical_idx] = 0;
     ++page_manager_state.free_page_frame_count;
+
+    // Update page directory
+    update_page_directory_entry(page_dir, 0, virtual_addr, (struct PageDirectoryEntryFlag) {0});
 
     return true;
 }

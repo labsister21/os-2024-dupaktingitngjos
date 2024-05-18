@@ -25,7 +25,7 @@ DISK_NAME     = storage
 
 run: all
 	@# chapter 1
-	@qemu-system-i386 -s -drive file=$(OUTPUT_FOLDER)/sample-image.bin,format=raw,if=ide,index=0,media=disk -cdrom $(OUTPUT_FOLDER)/$(ISO_NAME).iso
+	@qemu-system-i386 -s -drive file=$(OUTPUT_FOLDER)/storage.bin,format=raw,if=ide,index=0,media=disk -cdrom $(OUTPUT_FOLDER)/$(ISO_NAME).iso
 
 all: build
 
@@ -81,7 +81,8 @@ clean:
 		$(OUTPUT_FOLDER)/*.iso \
 		$(OUTPUT_FOLDER)/kernel \
 		$(OUTPUT_FOLDER)/inserter \
-		$(OUTPUT_FOLDER)/shell
+		$(OUTPUT_FOLDER)/shell \
+		$(OUTPUT_FOLDER)/shell_elf
 
 disk:
 	@qemu-img create -f raw $(OUTPUT_FOLDER)/$(DISK_NAME).bin 4M

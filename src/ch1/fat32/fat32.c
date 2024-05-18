@@ -326,7 +326,7 @@ int8_t write(struct FAT32DriverRequest request) {
     uint32_t i = 0;
     do {
         // Check for first empty FAT entry
-        while (driver_state.fat_table.cluster_map[i] != FAT32_FAT_EMPTY_ENTRY) {
+        while (driver_state.fat_table.cluster_map[fat_index] != FAT32_FAT_EMPTY_ENTRY) {
             ++fat_index;
         }
 
