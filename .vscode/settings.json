@@ -19,7 +19,9 @@
         "string.h": "c",
         "paging.h": "c",
         "fat32.h": "c",
-        "portio.h": "c"
+        "portio.h": "c",
+        "ostream": "c",
+        "streambuf": "c"
     },
     "editor.formatOnSave": false,
     "editor.fontSize": 16,
