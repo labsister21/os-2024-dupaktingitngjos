@@ -71,7 +71,7 @@ Waktu implementasi : Minggu, 7 April 2024 - Sabtu, 27 April 2024
 
 ## Cara Mengkompilasi dan Menjalankan Program
 1. Lakukan *clone repository* melalui terminal dengan *command* berikut
-    ``` bash
+    ```
     $ git clone https://github.com/labsister21/os-2024-dupaktingitngjos.git
     ```
 2. Lakukan eksekusi pada makefile dengan memasukkan *command* `make` pada terminal. 
