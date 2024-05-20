@@ -15,7 +15,7 @@
 #define BLACK        0b0000
 
 // Boolean
-#define bool int
+// #define bool int
 #define FALSE 0
 #define TRUE 1
 
@@ -41,5 +41,6 @@ int findEntry(char* name);
 
 /* Splash screen */
 void screenInit();
+int main(void);
 
 #endif

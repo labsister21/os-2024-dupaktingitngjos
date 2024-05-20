@@ -21,7 +21,9 @@
         "fat32.h": "c",
         "portio.h": "c",
         "ostream": "c",
-        "streambuf": "c"
+        "streambuf": "c",
+        "stdlib.h": "c",
+        "user-shell.h": "c"
     },
     "editor.formatOnSave": false,
     "editor.fontSize": 16,

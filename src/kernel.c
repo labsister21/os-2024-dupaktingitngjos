@@ -2,6 +2,7 @@
 #include <stdbool.h>
 #include "ch0/gdt/gdt.h"
 #include "ch0/kernel-entrypoint/kernel-entrypoint.h"
+#include "ch0/stdlib/string.h"
 #include "ch1/framebuffer/framebuffer.h"
 #include "ch1/portio/portio.h"
 #include "ch1/idt/idt.h"
@@ -10,6 +11,8 @@
 #include "ch1/disk/disk.h"
 #include "ch1/fat32/fat32.h"
 #include "ch2/paging/paging.h"
+#include "ch2/user-shell/user-shell.h"
+
 
 // void kernel_setup(void) {
 //     uint32_t a;
@@ -155,6 +158,19 @@ void kernel_setup(void) {
         .buffer_size           = 0x100000,
     };
     read(request);
+    struct ClusterBuffer cbuf[2];
+    memcpy(cbuf, "lol", 132);
+    request.buf = cbuf;
+    clear(&request.name, 8);
+    clear(&request.ext, 3);
+    memcpy(&request.name, "kaikai", 6);
+    memcpy(&request.ext, "txt", 3);
+    request.buffer_size = CLUSTER_SIZE;
+    write(request);
+    clear(&request.name, 8);
+    memcpy(cbuf, "Ini dari file lain\n", 20);
+    memcpy(&request.name, "lain", 4);
+    write(request);
 
     // Set TSS $esp pointer and jump into shell 
     set_tss_kernel_current_stack();

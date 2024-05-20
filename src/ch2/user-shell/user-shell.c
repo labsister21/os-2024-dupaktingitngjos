@@ -9,6 +9,8 @@
 #include "../../ch0/stdlib/string.h"
 #include "user-shell.h"
 #include "user-shell.h"
+#include "ls.h"
+#include "cd.h"
 
 void syscalls(uint32_t eax, uint32_t ebx, uint32_t ecx, uint32_t edx) {
     __asm__ volatile("mov %0, %%ebx" : /* <Empty> */ : "r"(ebx));
@@ -137,7 +139,7 @@ void updateDirectoryTable(uint32_t cluster_number) {
 int findEntry(char* name) {
     int entry_index = -1;
 
-    for (int i = 0; i < CLUSTER_SIZE / sizeof(struct FAT32DirectoryEntry); i++) {
+    for (uint32_t i = 0; i < CLUSTER_SIZE / sizeof(struct FAT32DirectoryEntry); i++) {
         if (memcmp(dir_table.table[i].name, name, 8) == 0) {
             entry_index = i;
             break;
@@ -151,24 +153,50 @@ int findEntry(char* name) {
 void screenInit();
 
 int main(void) {
-    struct ClusterBuffer      cl[2]   = {0};
-    struct FAT32DriverRequest request = {
-        .buf                   = &cl,
-        .name                  = "shell",
-        .ext                   = "\0\0\0",
-        .parent_cluster_number = ROOT_CLUSTER_NUMBER,
-        .buffer_size           = CLUSTER_SIZE,
-    };
-    int32_t retcode;
-    syscalls(0, (uint32_t) &request, (uint32_t) &retcode, 0);
-    if (retcode == 0)
-        syscalls(6, (uint32_t) "owo\n", 4, 0xF);
+    // The buffers
+    char args_val[2048];
+    int args_info[128][2];
+    char path_str[2048];
 
-    char buf;
+    // initScreen();
+    syscalls (4, (uint32_t) args_val, 2048, 0x0);
     syscalls(7, 0, 0, 0);
-    while (true) {
-        syscalls(4, (uint32_t) &buf, 0, 0);
-        syscalls(5, (uint32_t) &buf, 0xF, 0);
+    
+    while (TRUE) {
+        // Always start by clearing the buffer
+        clear(args_val, 2048);
+        for (int i = 0; i < 128; i++) {
+            clear(args_info[i], 2);
+        }
+        clear(path_str, 2048);
+
+        // Initialize
+        puts("dupaktingitngjos@OS-IF2230",19, LIGHT_GREEN);
+        putc(':', GREY);
+        printCurrentDirectory(path_str, current_directory);
+        puts("$ ", 2, GREY);
+        
+        // Asking for inputs
+        syscalls (4, (uint32_t) args_val, 2048, 0x0);
+
+        // Get the numbers of input args
+        int args_count = inputparse (args_val, args_info);
+        
+        // processing the command
+        if (args_count != 0) {
+            if ((memcmp(args_val + *(args_info)[0], "cd", 2) == 0) && ((*(args_info))[1] == 2)) {
+                cd(args_val, args_info, args_count);
+            }
+            else if ((memcmp(args_val + *(args_info)[0], "ls", 2) == 0) && ((*(args_info))[1] == 2)) {
+                ls(args_val, args_info, args_count);
+            }
+            else {
+                for (char i = 0; i < (*(args_info))[1]; i++) {
+                    puts(args_val + (*(args_info))[0] + i, 1, RED);
+                }
+                puts(": command not found\n",20, RED);
+            }
+        }
     }
 
     return 0;

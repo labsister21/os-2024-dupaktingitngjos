@@ -25,7 +25,7 @@ DISK_NAME     = storage
 
 run: all
 	@# chapter 1
-	@qemu-system-i386 -s -drive file=$(OUTPUT_FOLDER)/storage.bin,format=raw,if=ide,index=0,media=disk -cdrom $(OUTPUT_FOLDER)/$(ISO_NAME).iso
+	@qemu-system-i386 -s -drive file=$(OUTPUT_FOLDER)/sample-image.bin,format=raw,if=ide,index=0,media=disk -cdrom $(OUTPUT_FOLDER)/$(ISO_NAME).iso
 
 all: build
 
@@ -70,6 +70,9 @@ kernel:
 
 	@# chapter 2
 	@$(CC) $(CFLAGS) $(SOURCE_FOLDER)/$(CHAPTER_2)/paging/paging.c -o $(OUTPUT_FOLDER)/paging.o
+	# @$(CC) $(CFLAGS) $(SOURCE_FOLDER)/$(CHAPTER_2)/user-shell/user-shell.c -o $(OUTPUT_FOLDER)/user-shell.o
+	# @$(CC) $(CFLAGS) $(SOURCE_FOLDER)/$(CHAPTER_2)/user-shell/cd.c -o $(OUTPUT_FOLDER)/cd.o
+	# @$(CC) $(CFLAGS) $(SOURCE_FOLDER)/$(CHAPTER_2)/user-shell/ls.c -o $(OUTPUT_FOLDER)/ls.o
 
 	@$(LIN) $(LFLAGS) $(OUTPUT_FOLDER)/*.o -o $(OUTPUT_FOLDER)/kernel
 	@echo Linking object files and generate elf32...
