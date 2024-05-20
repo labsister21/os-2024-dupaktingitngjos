@@ -3,11 +3,11 @@
 #include "../../ch0/stdlib/string.h"
 #include "../../ch1/interrupt/interrupt.h"
 
-void mkdir(char* args_value, char (*args_info)[2], int args_count) {
-    // Track currently visited directory, initialized to the root directory
+void mkdir(char* args_value, int (*args_info)[2], int args_count) {
+    // track currently visited directory, initialized to the root directory
     uint32_t search_cluster_number = ROOT_CLUSTER_NUMBER;
 
-    // Parse the arguments
+    // parse the arguments
     int name_first_index_position = (*(args_info + 1))[0];
     int name_length = 0;
     int index = name_first_index_position;
@@ -19,25 +19,25 @@ void mkdir(char* args_value, char (*args_info)[2], int args_count) {
 
     int errorCode = 0;
 
-    // If more than 2 arguments, throw an error
+    // if more than 2 arguments, throw an error
     if (args_count != 2) {
         char *message = "mkdir: too many arguments\n";
         syscalls(6, (uint32_t) message, strlen(message), RED);
     }
     else {
-        // If path is not absolute, set the currently visited directory to current working directory
+        // if path is not absolute, set search_cluster_number to current working directory
         if (!isAbsolutePath(args_value, args_info, args_count)) {
             search_cluster_number = current_directory;
         }
 
-        // Get the directory table of the visited directory
+        // update the directory table of the visited directory
         updateDirectoryTable(search_cluster_number);
 
-        // Start searching for the directory to make 
+        // start searching to make directory
         while (!endOfArgs1) {
-            // If current char is not '/', process the information of word. Else, process the word itself
+            // If current char is not '/', process the information of word
+            // else, process the word itself
             if (memcmp(args_value + index, "/", 1) != 0 && index != name_last_index_position) {
-                // If word already started, increment the length. Else, start new word
                 if (!endWord) {
                     name_length++;
                 }
@@ -56,9 +56,10 @@ void mkdir(char* args_value, char (*args_info)[2], int args_count) {
                 }
             }
             else {
-                // Process the word
+                // process the word
                 if (!endWord) {
-                    // If word length more than 8, set an error code and stop parsing. Else, check if the word exist as directory
+                    // if word length is more than 8, set an error code and stop parsing.
+                    // else, check if the word exist as directory
                     if (name_length > 8) {
                         errorCode = 3;
                         endOfArgs1 = TRUE;

@@ -3,17 +3,14 @@
 #include "../../ch0/stdlib/string.h"
 
 void copy(char* args_value, int (*args_info)[2], int args_count) {
-    /* Searches if the destination exists and if it is a file or directory.
-       Returns 1 if it is a file, 0 if it is a directory, -1 if it is not found */
-
-    // Variables to keep track the currently visited directory
+    // track currently visited directory, initialized to the root directory
     uint32_t dest_search_directory_number = ROOT_CLUSTER_NUMBER;
     char destName[8];
     memset(destName, 0, sizeof(char) * 8);
     char destExt[3];
     memset(destName, 0, sizeof(char) * 3);
 
-    // Variables for parsing the arguments
+    // parse the arguments
     int posName = (*(args_info + args_count-1))[0];
     int lenName = 0;
     int index = posName;
@@ -26,24 +23,26 @@ void copy(char* args_value, int (*args_info)[2], int args_count) {
 
     int errorCode = 0;
 
-    // If path is not absolute, set the currently visited directory to current working directory
+    // if path is not absolute, set the currently visited directory to current working directory
     if (!isAbsolutePath(args_value, args_info, args_count-1)) {
         dest_search_directory_number = current_directory;
     }
 
-    // Get the directory table of the visited directory
+    // get the directory table of the visited directory
     updateDirectoryTable(dest_search_directory_number);
 
-    // Start searching for the directory to make 
+    // start searching for the directory to make 
     while (!endOfArgs) {
-        // If current char is not '/', process the information of word. Else, process the word itself
+        // if current char is not '/', process the information of word
+        // else, process the word itself
         if (memcmp(args_value + index, "/", 1) != 0 && index != posEndArgs) {
-            // If word already started, increment the length. Else, start new word
+            // if word already started, increment the length
+            // else, start new word
             if (!endWord) {
                 lenName++;
             }
             else {
-                // If there is a new word after non-existent directory, set an error code and stop parsing
+                // if there is a new word after non-existent directory, set an error code and stop parsing
                 if (newFileFound) {
                     newFileFound = FALSE;
                     if (errorCode == 5) {
@@ -62,9 +61,10 @@ void copy(char* args_value, int (*args_info)[2], int args_count) {
             }
         }
         else {
-            // Process the word
+            // process the word
             if (!endWord) {
-                // If word length more than 8, set an error code and stop parsing. Else, check if the word exist as directory
+                // if word length more than 8, set an error code and stop parsing
+                // else, check if the word exist as directory
                 if (lenName > 8) {
                     // Cek extension
                     int i = 0;
@@ -108,13 +108,13 @@ void copy(char* args_value, int (*args_info)[2], int args_count) {
                 else {
                     clear(destName, 8);
                     clear(destExt,3);
-                    // Cek extension
+                    // check extension
                     int i = 0;
                     while (i < lenName && memcmp(".", args_value + posName + i, 1) != 0) {
                         i++;
                     }
-                    if (i < lenName) { // Jika ada extension
-                        if (lenName-i-1 > 3) { // Jika extension lebih dari 3 karakter
+                    if (i < lenName) { // if there is an extension
+                        if (lenName - i - 1 > 3) { // if extension is more than 3 characters
                             errorCode = 3;
                             break;
                         }   
@@ -160,7 +160,7 @@ void copy(char* args_value, int (*args_info)[2], int args_count) {
         return;
     }
     else if (args_count > 3 && newFileFound) {
-        // If more than 1 file copied, it must be put into a folder
+        // if more than 1 file copied, it must be put into a folder
         char *message = "cp: target '";
         syscalls(6, (uint32_t) message, strlen(message), RED);
         message = args_value + (*(args_info + args_count-1))[0];
@@ -170,16 +170,16 @@ void copy(char* args_value, int (*args_info)[2], int args_count) {
         return;
     }
 
-    // Read each files that need to be copied
+    // read each files that need to be copied
     for (int j=1; j<args_count-1; j++) {
-        // Variables to keep track the currently visited directory
+        // keep track the currently visited directory
         uint32_t src_search_directory_number = ROOT_CLUSTER_NUMBER;
         char srcName[8];
         memset(srcName, 0, sizeof(char) * 8);
         char srcExt[3];
         memset(srcExt, 0, sizeof(char) * 3);
 
-        // Variables for parsing the arguments
+        // parse the arguments
         posName = (*(args_info + j))[0];
         lenName = 0;
         index = posName;
@@ -192,24 +192,26 @@ void copy(char* args_value, int (*args_info)[2], int args_count) {
 
         errorCode = 0;
 
-        // If path is not absolute, set the currently visited directory to current working directory
+        // if path is not absolute, set the currently visited directory to current working directory
         if (!isAbsolutePath(args_value, args_info, j)) {
             src_search_directory_number = current_directory;
         }
 
-        // Get the directory table of the visited directory
+        // get the directory table of the visited directory
         updateDirectoryTable(src_search_directory_number);
 
         // Start searching for the directory to make 
         while (!endOfArgs) {
-            // If current char is not '/', process the information of word. Else, process the word itself
+            // if current char is not '/', process the information of word
+            // else, process the word itself
             if (memcmp(args_value + index, "/", 1) != 0 && index != posEndArgs) {
-                // If word already started, increment the length. Else, start new word
+                // if word already started, increment the length
+                // else, start new word
                 if (!endWord) {
                     lenName++;
                 }
                 else {
-                    // If there is a new word after non-existent directory, set an error code and stop parsing
+                    // if there is a new word after non-existent directory, set an error code and stop parsing
                     if (srcNewFileFound) {
                         srcNewFileFound = FALSE;
                         if (errorCode == 5) {
@@ -228,11 +230,12 @@ void copy(char* args_value, int (*args_info)[2], int args_count) {
                 }
             }
             else {
-                // Process the word
+                // process the word
                 if (!endWord) {
-                    // If word length more than 8, set an error code and stop parsing. Else, check if the word exist as directory
+                    // if word length more than 8, set an error code and stop parsing
+                    // else, check if the word exist as directory
                     if (lenName > 8) {
-                        // Periksa extension
+                        // check extension
                         int i = 0;
                         while (i < lenName && memcmp(".", args_value + posName + i, 1) != 0) {
                             i++;
@@ -276,13 +279,13 @@ void copy(char* args_value, int (*args_info)[2], int args_count) {
                     else {
                         clear(srcName, 8);
                         clear(srcExt,3);
-                        // Periksa extension
+                        // check extension
                         int i = 0;
                         while (i < lenName && memcmp(".", args_value + posName + i, 1) != 0) {
                             i++;
                         }
-                        if (i < lenName) { // Jika ada extension
-                            if (lenName-i-1 > 3) { // Jika extension lebih dari 3 karakter
+                        if (i < lenName) { // if there is an extension
+                            if (lenName - i - 1 > 3) { // if extension is more than 3 characters
                                 errorCode = 3;
                                 break;
                             }
@@ -381,7 +384,7 @@ void copy(char* args_value, int (*args_info)[2], int args_count) {
             }
         } else {
             if (!newFileFound) {
-                // Tujuan berupa direktori
+                // destination is a directory
                 srcRequest.parent_cluster_number = dest_search_directory_number;
                 syscalls(3, (uint32_t) &srcRequest, (uint32_t) &retCode, 0x0);
                 syscalls(2, (uint32_t) &srcRequest, (uint32_t) &retCode, 0x0);
@@ -402,7 +405,7 @@ void copy(char* args_value, int (*args_info)[2], int args_count) {
                     }
                 }
             } else {
-                // Tujuan berupa file
+                // destination is a file
                 struct FAT32DriverRequest destReq = {
                     .buf = &clusterBuffer,
                     .name = "\0\0\0\0\0\0\0\0",

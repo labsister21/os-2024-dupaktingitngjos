@@ -25,7 +25,7 @@ DISK_NAME     = storage
 
 run: all
 	@# chapter 1
-	@qemu-system-i386 -s -drive file=$(OUTPUT_FOLDER)/sample-image.bin,format=raw,if=ide,index=0,media=disk -cdrom $(OUTPUT_FOLDER)/$(ISO_NAME).iso
+	@qemu-system-i386 -s -drive file=$(OUTPUT_FOLDER)/storage.bin,format=raw,if=ide,index=0,media=disk -cdrom $(OUTPUT_FOLDER)/$(ISO_NAME).iso
 
 all: build
 
@@ -70,9 +70,6 @@ kernel:
 
 	@# chapter 2
 	@$(CC) $(CFLAGS) $(SOURCE_FOLDER)/$(CHAPTER_2)/paging/paging.c -o $(OUTPUT_FOLDER)/paging.o
-	# @$(CC) $(CFLAGS) $(SOURCE_FOLDER)/$(CHAPTER_2)/user-shell/user-shell.c -o $(OUTPUT_FOLDER)/user-shell.o
-	# @$(CC) $(CFLAGS) $(SOURCE_FOLDER)/$(CHAPTER_2)/user-shell/cd.c -o $(OUTPUT_FOLDER)/cd.o
-	# @$(CC) $(CFLAGS) $(SOURCE_FOLDER)/$(CHAPTER_2)/user-shell/ls.c -o $(OUTPUT_FOLDER)/ls.o
 
 	@$(LIN) $(LFLAGS) $(OUTPUT_FOLDER)/*.o -o $(OUTPUT_FOLDER)/kernel
 	@echo Linking object files and generate elf32...
@@ -105,11 +102,15 @@ user-shell:
 	@$(ASM) $(AFLAGS) $(SOURCE_FOLDER)/$(CHAPTER_2)/crt0/crt0.s -o crt0.o
 	@$(CC)  $(CFLAGS) -fno-pie $(SOURCE_FOLDER)/$(CHAPTER_2)/user-shell/user-shell.c -o user-shell.o
 	@$(CC)  $(CFLAGS) -fno-pie $(SOURCE_FOLDER)/$(CHAPTER_0)/stdlib/string.c -o string.o
+	@$(CC)  $(CFLAGS) -fno-pie $(SOURCE_FOLDER)/$(CHAPTER_2)/user-shell/cd.c -o cd.o
+	@$(CC)  $(CFLAGS) -fno-pie $(SOURCE_FOLDER)/$(CHAPTER_2)/user-shell/cp.c -o cp.o
+	@$(CC)  $(CFLAGS) -fno-pie $(SOURCE_FOLDER)/$(CHAPTER_2)/user-shell/ls.c -o ls.o
+	@$(CC)  $(CFLAGS) -fno-pie $(SOURCE_FOLDER)/$(CHAPTER_2)/user-shell/mkdir.c -o mkdir.o
 	@$(LIN) -T $(SOURCE_FOLDER)/user-linker.ld -melf_i386 --oformat=binary \
-		crt0.o user-shell.o string.o -o $(OUTPUT_FOLDER)/shell
+		crt0.o user-shell.o string.o cd.o cp.o ls.o mkdir.o -o $(OUTPUT_FOLDER)/shell
 	@echo Linking object shell object files and generate flat binary...
 	@$(LIN) -T $(SOURCE_FOLDER)/user-linker.ld -melf_i386 --oformat=elf32-i386 \
-		crt0.o user-shell.o string.o -o $(OUTPUT_FOLDER)/shell_elf
+		crt0.o user-shell.o string.o cd.o cp.o ls.o mkdir.o -o $(OUTPUT_FOLDER)/shell_elf
 	@echo Linking object shell object files and generate ELF32 for debugging...
 	@size --target=binary $(OUTPUT_FOLDER)/shell
 	@rm -f *.o
