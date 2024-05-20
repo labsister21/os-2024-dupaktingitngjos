@@ -136,6 +136,27 @@ void updateDirectoryTable(uint32_t cluster_number) {
     syscalls(6, (uint32_t) &dir_table, cluster_number, 0x0);
 }
 
+// Find the name of directory in the dir_table and return its cluster number
+int findDirectoryNumber(char* args_val, int position, int length) {
+    int result = -1;
+
+    int i = 1;
+    bool found = FALSE;
+    while (i < 64 && !found) {
+        if (memcmp(dir_table.table[i].name, args_val + position, length) == 0 && 
+            dir_table.table[i].user_attribute ==UATTR_NOT_EMPTY &&
+            dir_table.table[i].attribute == ATTR_SUBDIRECTORY) {
+            result = (int) ((dir_table.table[i].cluster_high << 16) | dir_table.table[i].cluster_low);
+            found = TRUE;
+        }
+        else {
+            i++;
+        }
+    }
+
+    return result;
+}
+
 int findEntry(char* name) {
     int entry_index = -1;
 

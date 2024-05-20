@@ -37,6 +37,9 @@ bool isAbsolutePath(char* args_val, int (*args_info)[2], int args_position);
 
 void updateDirectoryTable(uint32_t cluster_number);
 
+// Find the name of directory in the dir_table and return its cluster number
+int findDirectoryNumber(char* args_val, int position, int length);
+
 int findEntry(char* name);
 
 /* Splash screen */
