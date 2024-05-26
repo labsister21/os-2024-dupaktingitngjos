@@ -102,15 +102,15 @@ user-shell:
 	@$(ASM) $(AFLAGS) $(SOURCE_FOLDER)/$(CHAPTER_2)/crt0/crt0.s -o crt0.o
 	@$(CC)  $(CFLAGS) -fno-pie $(SOURCE_FOLDER)/$(CHAPTER_2)/user-shell/user-shell.c -o user-shell.o
 	@$(CC)  $(CFLAGS) -fno-pie $(SOURCE_FOLDER)/$(CHAPTER_0)/stdlib/string.c -o string.o
-	@$(CC)  $(CFLAGS) -fno-pie $(SOURCE_FOLDER)/$(CHAPTER_2)/user-shell/cd.c -o cd.o
-	@$(CC)  $(CFLAGS) -fno-pie $(SOURCE_FOLDER)/$(CHAPTER_2)/user-shell/cp.c -o cp.o
-	@$(CC)  $(CFLAGS) -fno-pie $(SOURCE_FOLDER)/$(CHAPTER_2)/user-shell/ls.c -o ls.o
-	@$(CC)  $(CFLAGS) -fno-pie $(SOURCE_FOLDER)/$(CHAPTER_2)/user-shell/mkdir.c -o mkdir.o
+	# @$(CC)  $(CFLAGS) -fno-pie $(SOURCE_FOLDER)/$(CHAPTER_2)/user-shell/cd.c -o cd.o
+	# @$(CC)  $(CFLAGS) -fno-pie $(SOURCE_FOLDER)/$(CHAPTER_2)/user-shell/cp.c -o cp.o
+	# @$(CC)  $(CFLAGS) -fno-pie $(SOURCE_FOLDER)/$(CHAPTER_2)/user-shell/ls.c -o ls.o
+	# @$(CC)  $(CFLAGS) -fno-pie $(SOURCE_FOLDER)/$(CHAPTER_2)/user-shell/mkdir.c -o mkdir.o
 	@$(LIN) -T $(SOURCE_FOLDER)/user-linker.ld -melf_i386 --oformat=binary \
-		crt0.o user-shell.o string.o cd.o cp.o ls.o mkdir.o -o $(OUTPUT_FOLDER)/shell
+		crt0.o user-shell.o string.o -o $(OUTPUT_FOLDER)/shell
 	@echo Linking object shell object files and generate flat binary...
 	@$(LIN) -T $(SOURCE_FOLDER)/user-linker.ld -melf_i386 --oformat=elf32-i386 \
-		crt0.o user-shell.o string.o cd.o cp.o ls.o mkdir.o -o $(OUTPUT_FOLDER)/shell_elf
+		crt0.o user-shell.o string.o -o $(OUTPUT_FOLDER)/shell_elf
 	@echo Linking object shell object files and generate ELF32 for debugging...
 	@size --target=binary $(OUTPUT_FOLDER)/shell
 	@rm -f *.o
